@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIVE Simulator Pro</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; }
+        .container { position: relative; width: 100vw; height: 60vh; background: #000; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        .live-badge { position: absolute; top: 15px; left: 15px; background: red; color: white; padding: 3px 10px; font-weight: bold; border-radius: 5px; font-size: 12px; animation: blink 1s infinite; z-index: 100; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
+        .viewer-count { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.6); color: #fff; padding: 3px 12px; border-radius: 5px; font-size: 13px; font-weight: bold; z-index: 100; }
+        #comment-overlay { position: absolute; bottom: 10px; left: 10px; width: 75%; height: 120px; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; z-index: 1000; }
+        .comment { background: rgba(0, 0, 0, 0.4); color: #00ff00; padding: 6px 12px; margin-bottom: 5px; border-radius: 15px; font-size: 13px; animation: slideIn 0.3s ease; width: fit-content; }
+        @keyframes slideIn { from {opacity: 0; transform: translateX(-10px);} to {opacity: 1; transform: translateX(0);} }
+        .floating-item { position: absolute; bottom: 20px; right: 20px; font-size: 30px; pointer-events: none; z-index: 1001; animation: flyUp 2s linear forwards; }
+        @keyframes flyUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-400px) translateX(50px) scale(2); opacity: 0; } }
+        .input-box { height: 40vh; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; border-top: 1px solid #333; }
+        input[type="text"] { width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #333; background: #222; color: #fff; margin-bottom: 10px; outline: none; }
+        .btns { display: flex; gap: 10px; width: 85%; }
+        button { flex: 1; padding: 12px; border-radius: 25px; font-weight: bold; border: none; }
+        .send-btn { background: #00ff00; color: #000; }
+        .file-btn { background: #555; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container" id="videoContainer">
+        <div class="live-badge">● LIVE</div>
+        <div class="viewer-count">👁 <span id="count">1,240</span></div>
+        <video id="v" autoplay muted loop playsinline><source src=""></video>
+        <div id="comment-overlay"></div>
+    </div>
+    <div class="input-box">
+        <input type="text" id="in" placeholder="rose သို့မဟုတ် gift လို့ ရိုက်ကြည့်ပါ...">
+        <div class="btns">
+            <button class="file-btn" onclick="document.getElementById('file-input').click()">📁 ဗီဒီယိုရွေးရန်</button>
+            <button class="send-btn" onclick="send()">ပို့မည်</button>
+        </div>
+        <input type="file" id="file-input" accept="video/*" style="display:none" onchange="loadVideo(event)">
+    </div>
+    <script>
+        function loadVideo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const video = document.getElementById('v');
+                video.src = URL.createObjectURL(file);
+                video.play();
+            }
+        }
+        function createFloatingItem(emoji) {
+            const container = document.getElementById('videoContainer');
+            const item = document.createElement('div');
+            item.className = 'floating-item'; item.innerHTML = emoji;
+            item.style.right = (Math.random() * 50 + 10) + 'px';
+            container.appendChild(item);
+            setTimeout(() => { item.remove(); }, 2000);
+        }
+        function send() {
+            var o = document.getElementById("comment-overlay");
+            var i = document.getElementById("in");
+            var val = i.value.trim().toLowerCase();
+            if(val !== "") {
+                var d = document.createElement("div");
+                d.className = "comment"; d.innerHTML = "<b>User:</b> " + i.value;
+                o.appendChild(d);
+                if(o.childNodes.length > 5) o.removeChild(o.firstChild);
+                
+                if(val.includes("rose")) {
+                    for(let j=0; j<10; j++) { setTimeout(() => createFloatingItem('🌹'), j * 100); }
+                } else if(val.includes("gift")) {
+                    for(let j=0; j<8; j++) { setTimeout(() => createFloatingItem('🎁'), j * 150); }
+                } else {
+                    for(let j=0; j<3; j++) { setTimeout(() => createFloatingItem('❤️'), j * 200); }
+                }
+                i.value = "";
+            }
+        }
+    </script>
+</body>
+</html>
